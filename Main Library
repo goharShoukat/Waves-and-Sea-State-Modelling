@@ -36,7 +36,7 @@ x=0 shallow, x=1 Deep, x=2 intermediate
 
 def diffraction_parameter(g, h, tide, u_c, w_a):
     def solve_for_k(k):
-        f=u_c*k+math.sqrt(g*k*math.tanh(k*(h+tide)))-w_a**2
+        f=u_c*k+math.sqrt(g*k*math.tanh(k*(h+tide)))-w_a
         return f
     
     x=scipy.optimize.fsolve(solve_for_k,0)
