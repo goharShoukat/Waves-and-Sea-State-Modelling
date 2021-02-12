@@ -1,4 +1,4 @@
-# Static-Wave-Analysis-API-RP-2A-WSD-2000-ED21
+# Hydrodynamic Load Analysis using Morisons Equation
 This Library allows users to model forces acting on a cylindrical bottom mounted offshore structure. It has the following utilities:
 - Wave Field Meshing
 - Wave Field Modelling
