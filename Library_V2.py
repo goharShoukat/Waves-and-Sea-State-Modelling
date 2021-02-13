@@ -22,7 +22,7 @@ class Set_Wave_Field:
         self.amplitude = amplitude
         
     #determines the wave number iteratively by solving the dispersion relation
-    def kfromw(self):
+    def kfromw(self, omega = False):
         def solve_for_k(k):
             return (self.tide_velocity * k + np.sqrt(self.gravity * k * \
                                         np.tanh(k * self.depth)) - self.omega)     
@@ -100,13 +100,14 @@ class Wave_Field(Set_Wave_Field):
         else:
             return   (self.amplitude * np.cos(self.kfromw()\
                                                 * x - self.omega*time))     
-    def velocity_potential_spatial_variable(self, z: np.ndarray, x: np.ndarray, omega: float,\
-                           k: float, time: float):
+    def velocity_potential_spatial_variable(self, z: np.ndarray, x: np.ndarray,\
+                           time: float):
+        k = self.kfromw()
         X, Z = np.meshgrid(x, z)
-        pot = self.amplitude * self.gravity / omega * \
+        pot = self.amplitude * self.gravity / self.omega * \
             np.cosh(k * (Z + self.depth))/np.cosh(k * self.depth) * \
-                np.sin(k * X - omega * time)
+                np.sin(k * X -self.omega * time)
         return pot
 
 field = Wave_Field(10, 2, 0, 0.1)
-field.velocity_potential_spatial_variable()
+pot=field.velocity_potential_spatial_variable(np.arange(-10,1,10), np.arange(0,11,10), 1)
