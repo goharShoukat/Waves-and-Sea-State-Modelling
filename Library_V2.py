@@ -8,6 +8,7 @@ Created on Wed Feb  10 22:22:10 2021
 import scipy.optimize
 import numpy as np
 import math
+import sys
 
 class Set_Wave_Field:
     #All parameters passed should be in SI Units
@@ -25,7 +26,7 @@ class Set_Wave_Field:
         def solve_for_k(k):
             return (self.tide_velocity * k + np.sqrt(self.gravity * k * \
                                         np.tanh(k * self.depth)) - self.omega)     
-        return (scipy.optimize.fsolve(solve_for_k,0))
+        return (scipy.optimize.fsolve(solve_for_k, 0))
 
     #calculates the wave length
     def wave_length(self):        
@@ -69,5 +70,34 @@ class Set_Wave_Field:
     #within linear airy wave theory
     def epsilon(self):
         return (self.kfromw() * self.amplitude)
-        
+
+
+#Chile Class of the Set_Wave_Field Parent. 
+#Pressure, Velocity fields will be calculated and plotted here
+#Linear Airy Solution
+
+class Wave_Field(Set_Wave_Field):
     
+    def __init__(self, depth, time_period, tide_velocity, amplitude):
+        super().__init__(depth, time_period, tide_velocity, amplitude)
+    
+    #wave surface eleveation function. 
+    #two dimensional time varying array
+    #row = z variation
+    #column = time variation
+    #x position is a float value, not an array
+    #code can deal with arrays of K and omega, but works with only one array 
+    #either x or time. user will have to define which one to use per run. 
+    
+    #dimensions of k if array is passed = m x 1
+    #dimension of x if array is passed = 1 x m
+    #dimensions of omega if array is passed = m x 1
+    #dimension of t if array is passed = 1 x m
+    
+    def elevation_for_time(self, x, time):
+        if type(x) == np.ndarray and type(time) == np.ndarray:
+            return (print('x and time can not both be arrays'))
+        else:
+            return   (self.amplitude * np.cos(self.kfromw()\
+                                                * x - self.omega*time))     
+            
