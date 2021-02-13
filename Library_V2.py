@@ -94,10 +94,19 @@ class Wave_Field(Set_Wave_Field):
     #dimensions of omega if array is passed = m x 1
     #dimension of t if array is passed = 1 x m
     
-    def elevation_for_time(self, x, time):
+    def elevation(self, x, time):
         if type(x) == np.ndarray and type(time) == np.ndarray:
-            return (print('x and time can not both be arrays'))
+            raise TypeError ('x and time can not both be arrays')
         else:
             return   (self.amplitude * np.cos(self.kfromw()\
                                                 * x - self.omega*time))     
-            
+    def velocity_potential_spatial_variable(self, z: np.ndarray, x: np.ndarray, omega: float,\
+                           k: float, time: float):
+        X, Z = np.meshgrid(x, z)
+        pot = self.amplitude * self.gravity / omega * \
+            np.cosh(k * (Z + self.depth))/np.cosh(k * self.depth) * \
+                np.sin(k * X - omega * time)
+        return pot
+
+field = Wave_Field(10, 2, 0, 0.1)
+field.velocity_potential_spatial_variable()
