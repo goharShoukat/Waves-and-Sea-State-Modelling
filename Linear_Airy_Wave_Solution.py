@@ -143,16 +143,12 @@ class Wave_Field(Set_Wave_Field):
     def plot(self, pressure, hor_velocity, vert_velocity, time):
         plt.figure()
         plt.contourf(self.X, self.Z, pressure)
+        plt.colorbar()
         plt.quiver(self.X, self.Z, \
                    self.horizontal_velocity_spatial_variable(time), \
                        self.vertical_velocity_spatial_variable(time))
         plt.plot(self.x, self.elevation(self.x, time))
+        plt.xlabel('x [m]')
+        plt.ylabel('z [m]')
+        plt.title('T = ' + str(time) + 's')
         plt.show()
-        
-x = np.arange(0,41,0.5)
-field =  Wave_Field(10, 5, 0, 0.1, x, 0.5)
-press = field.linearPressure_Dynamic(1, 1000)
-hor_velocity = field.horizontal_velocity_spatial_variable(1)
-vert_velocity = field.vertical_velocity_spatial_variable(1)
-field.plot(press, hor_velocity, vert_velocity, 1)
-
