@@ -80,7 +80,7 @@ class Set_Wave_Field:
 class Wave_Field(Set_Wave_Field):
     
     def __init__(self, depth, time_period, tide_velocity, amplitude, \
-                 z: np.ndarray, x: np.ndarray):
+                 x: np.ndarray, z: np.ndarray):
         super().__init__(depth, time_period, tide_velocity, amplitude)
         self.X, self.Z = np.meshgrid(x, z)
     
@@ -110,12 +110,28 @@ class Wave_Field(Set_Wave_Field):
         #be able to either use omega from self or as an argument passed directly
         #on to the function
         k = self.kfromw()
-
         return(self.amplitude * self.gravity / self.omega * \
-            np.cosh(k * (Z + self.depth))/np.cosh(k * self.depth) * \
-                np.sin(k * X -self.omega * time))
+            np.cosh(k * (self.Z + self.depth))/np.cosh(k * self.depth) * \
+                np.sin(k * self.X -self.omega * time))
         
-    def horizontal_velocity_spatial_variable()
+    def horizontal_velocity_spatial_variable(self, time: float):
+        k = self.kfromw()
+        return (self.amplitude * self.omega * \
+                (np.cosh(k * (self.Z + self.depth)))/np.sinh(k * self.depth) \
+                    *np.cos(k*self.X - self.omega * time))
+    
+    def vertical_velocity_spatial_variable(self, time: float):
+        k = self.kfromw()        
+        return (self.amplitude * self.omega * \
+                (np.sinh(k * (self.Z + self.depth)))/np.sinh(k * self.depth) \
+                    *np.sin(k*self.X - self.omega * time))
+        
+    def linearPressure_Dynamic(self, time: float, rho):
+        
+        k = self.kfromw(self)
+        return (self.amplitude * rho * self.gravity * \
+                (np.cosh(k * (self.Z + self.depth)))/np.sinh(k * self.depth) \
+                    *np.cos(k*self.X - self.omega * time))
         
 
 field = Wave_Field(10, 2, 0, 0.1)
