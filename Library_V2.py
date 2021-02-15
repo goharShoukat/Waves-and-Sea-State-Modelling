@@ -79,8 +79,10 @@ class Set_Wave_Field:
 
 class Wave_Field(Set_Wave_Field):
     
-    def __init__(self, depth, time_period, tide_velocity, amplitude):
+    def __init__(self, depth, time_period, tide_velocity, amplitude, \
+                 z: np.ndarray, x: np.ndarray):
         super().__init__(depth, time_period, tide_velocity, amplitude)
+        self.X, self.Z = np.meshgrid(x, z)
     
     #wave surface eleveation function. 
     #two dimensional time varying array
@@ -100,20 +102,21 @@ class Wave_Field(Set_Wave_Field):
             raise TypeError ('x and time can not both be arrays')
         else:
             return   (self.amplitude * np.cos(self.kfromw()\
-                                                * x - self.omega*time))     
-    def velocity_potential_spatial_variable(self, z: np.ndarray, x: np.ndarray,\
-                           time: float):
+                                                * x - self.omega*time))    
+                
+    def velocity_potential_spatial_variable(self, time: float):
         #for evolution with time, run a for loop with different values of Time
         #The argument need to be fixed in the next patch. Function needs to 
         #be able to either use omega from self or as an argument passed directly
         #on to the function
         k = self.kfromw()
-        X, Z = np.meshgrid(x, z)
+
         return(self.amplitude * self.gravity / self.omega * \
             np.cosh(k * (Z + self.depth))/np.cosh(k * self.depth) * \
                 np.sin(k * X -self.omega * time))
         
-
+    def horizontal_velocity_spatial_variable()
+        
 
 field = Wave_Field(10, 2, 0, 0.1)
 pot=field.velocity_potential_spatial_variable(np.arange(-10,1,1), np.arange(0,11,1), 1)
