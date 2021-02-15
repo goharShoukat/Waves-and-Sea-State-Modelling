@@ -15,6 +15,8 @@ import matplotlib.pyplot as plt
 class Set_Wave_Field:
     #All parameters passed should be in SI Units
     gravity = 9.81
+    nu = 1.3e-6
+    rho = 1000
     
     #takes the basic parameters of wave field
     def __init__(self,depth, time_period, tide_velocity, amplitude):
@@ -132,10 +134,10 @@ class Wave_Field(Set_Wave_Field):
                 (np.sinh(k * (self.Z + self.depth)))/np.sinh(k * self.depth) \
                     *np.sin(k*self.X - self.omega * time))
         
-    def linearPressure_Dynamic(self, time: float, rho):
+    def linearPressure_Dynamic(self, time: float):
         
         k = self.kfromw()
-        return (self.amplitude * rho * self.gravity * \
+        return (self.amplitude * self.rho * self.gravity * \
                 (np.cosh(k * (self.Z + self.depth)))/np.sinh(k * self.depth) \
                     *np.cos(k*self.X - self.omega * time))
     
@@ -153,3 +155,5 @@ class Wave_Field(Set_Wave_Field):
         plt.ylabel('z [m]')
         plt.title('T = ' + str(time) + 's')
         plt.show()
+        
+
