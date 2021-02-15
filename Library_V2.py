@@ -9,6 +9,7 @@ import scipy.optimize
 import numpy as np
 import math
 import sys
+import matplotlib.pyplot as plt
 
 class Set_Wave_Field:
     #All parameters passed should be in SI Units
@@ -102,12 +103,19 @@ class Wave_Field(Set_Wave_Field):
                                                 * x - self.omega*time))     
     def velocity_potential_spatial_variable(self, z: np.ndarray, x: np.ndarray,\
                            time: float):
+        #for evolution with time, run a for loop with different values of Time
+        #The argument need to be fixed in the next patch. Function needs to 
+        #be able to either use omega from self or as an argument passed directly
+        #on to the function
         k = self.kfromw()
         X, Z = np.meshgrid(x, z)
-        pot = self.amplitude * self.gravity / self.omega * \
+        return(self.amplitude * self.gravity / self.omega * \
             np.cosh(k * (Z + self.depth))/np.cosh(k * self.depth) * \
-                np.sin(k * X -self.omega * time)
-        return pot
+                np.sin(k * X -self.omega * time))
+        
+
 
 field = Wave_Field(10, 2, 0, 0.1)
-pot=field.velocity_potential_spatial_variable(np.arange(-10,1,10), np.arange(0,11,10), 1)
+pot=field.velocity_potential_spatial_variable(np.arange(-10,1,1), np.arange(0,11,1), 1)
+print(field.elevation(np.arange(0,11,0.5), 2))
+plt.plot(np.arange(0,11,0.1), field.elevation(np.arange(0,11,.1), math.pi))
