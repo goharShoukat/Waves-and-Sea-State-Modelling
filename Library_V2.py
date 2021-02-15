@@ -23,7 +23,7 @@ class Set_Wave_Field:
         self.amplitude = amplitude
         
     #determines the wave number iteratively by solving the dispersion relation
-    def kfromw(self, omega = False):
+    def kfromw(self):
         def solve_for_k(k):
             return (self.tide_velocity * k + np.sqrt(self.gravity * k * \
                                         np.tanh(k * self.depth)) - self.omega)     
@@ -80,9 +80,14 @@ class Set_Wave_Field:
 class Wave_Field(Set_Wave_Field):
     
     def __init__(self, depth, time_period, tide_velocity, amplitude, \
-                 x: np.ndarray, z: np.ndarray):
+                 x: np.ndarray, delta_z):
         super().__init__(depth, time_period, tide_velocity, amplitude)
-        self.X, self.Z = np.meshgrid(x, z)
+        self.x = x
+        self.z = np.arange(-depth, 0 + delta_z, delta_z)
+        self.X, self.Z = np.meshgrid(self.x, self.z)
+
+    def meshgrid(self):
+        return (self.X, self.Z)
     
     #wave surface eleveation function. 
     #two dimensional time varying array
@@ -128,13 +133,26 @@ class Wave_Field(Set_Wave_Field):
         
     def linearPressure_Dynamic(self, time: float, rho):
         
-        k = self.kfromw(self)
+        k = self.kfromw()
         return (self.amplitude * rho * self.gravity * \
                 (np.cosh(k * (self.Z + self.depth)))/np.sinh(k * self.depth) \
                     *np.cos(k*self.X - self.omega * time))
+    
+    #we pass both the horizontal and vertical velocity. the function plots the 
+    #correct angle and mangnitude of the quivers. 
+    def plot(self, pressure, hor_velocity, vert_velocity, time):
+        plt.figure()
+        plt.contourf(self.X, self.Z, pressure)
+        plt.quiver(self.X, self.Z, \
+                   self.horizontal_velocity_spatial_variable(time), \
+                       self.vertical_velocity_spatial_variable(time))
+        plt.plot(self.x, self.elevation(self.x, time))
+        plt.show()
         
+x = np.arange(0,41,0.5)
+field =  Wave_Field(10, 5, 0, 0.1, x, 0.5)
+press = field.linearPressure_Dynamic(1, 1000)
+hor_velocity = field.horizontal_velocity_spatial_variable(1)
+vert_velocity = field.vertical_velocity_spatial_variable(1)
+field.plot(press, hor_velocity, vert_velocity, 1)
 
-field = Wave_Field(10, 2, 0, 0.1)
-pot=field.velocity_potential_spatial_variable(np.arange(-10,1,1), np.arange(0,11,1), 1)
-print(field.elevation(np.arange(0,11,0.5), 2))
-plt.plot(np.arange(0,11,0.1), field.elevation(np.arange(0,11,.1), math.pi))
