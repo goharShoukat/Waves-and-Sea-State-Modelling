@@ -9,7 +9,10 @@ The following conditions must be fulfilled to ensure accuracy of results:
 - 2D wave field
 - Deep Water Wave Conditions
 - Small Body Assumption to ensure Morison's Equations hold true. 
+
+Instructions for Use:
 - Velocity, Pressure and Elevation functions within the Wave_Field Class use spatial grid, at a particular time value. The spatial grid needs to be created by using the meshgrid command by meshing the x and z arrays.  
+
 
 The second version of this library has following limitations:
 - Doesn't allow broadcasting for the k, x, time and omega variables.
