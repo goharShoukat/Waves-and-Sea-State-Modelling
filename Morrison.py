@@ -8,6 +8,7 @@ Created on Mon 15 Feb 2021
 import math
 import numpy as np
 import Linear_Airy_Wave_Solution
+import scipy.interpolate as interpolate
 
 class Morisons(Linear_Airy_Wave_Solution.Set_Wave_Field):
     
@@ -45,9 +46,17 @@ class Morisons(Linear_Airy_Wave_Solution.Set_Wave_Field):
     #z is passed on a numpy arraym x 1 dimensions
     #z goes from 0 to depth. 
     def horizontal_velocity(self, x, time, z):
-        self.U = self.amplitude * self.omega * np.dot((np.cosh(self.kfromw() * (z + self.depth))/\
-            np.sinh(self.kfromw() * self.depth)), (np.sin(self.kfromw() * x - self.omega * time)).T)
+        self.U = self.amplitude * self.omega * np.dot((np.cosh(self.kfromw()\
+                * (z + self.depth)) / np.sinh(self.kfromw() * self.depth)), \
+                            (np.cos(self.kfromw() * x - self.omega * time)).T)
         return self.U
+    
+    def horizontal_accelration(self, x, time, z):
+        self.accel = self.amplitude * pow(self.omega,2) *\
+            np.dot((np.cosh(self.kfromw() * (z + self.depth))/\
+            np.sinh(self.kfromw() * self.depth)), \
+                   (np.sin(self.kfromw() * x - self.omega * time)).T)
+        return self.accel
     
     def Reynolds(self):
         return (self.U * self.diameter / self.nu)
@@ -57,20 +66,35 @@ class Morisons(Linear_Airy_Wave_Solution.Set_Wave_Field):
     
     def coefficient(self, local_Re, local_kc):
         Re = np.array((-10, 1e1, 1e3, 5e5, 1e10))
-        kc = np.array(-0.05, 5, 15, 50, 100)
+        kc = np.array((-0.05, 5, 15, 50, 100))
         KC, RE = np.meshgrid(kc, Re)
         Cm = np.array([[2, 2, 0.6, 1, 1.1], 
-               [2, 2, 0.6, 1, 1.2],
-               [2, 2, 0.8, 1.4, 1.5],
-               [2, 2, 1.3, 1.6, 1.7], 
-               [2, 2, 2, 2, 2]])
+                       [2, 2, 0.6, 1, 1.2],
+                       [2, 2, 0.8, 1.4, 1.5],
+                       [2, 2, 1.3, 1.6, 1.7], 
+                       [2, 2, 2, 2, 2]])
+        
+        Cd = np.array([[2, 2, 2.5, 1.5, 1.3],
+                       [2, 2, 2.5, 1.5, 1.3],
+                       [2, 2, 2.5, 1.5, 1.3],
+                       [2, 1.3, 1, 0.6, 0.5],
+                       [2, 0.5, 0.7, 0.6, 0.6]])
+        
+        ip_Cm = interpolate.interp2d(KC, RE, Cm)
+        local_Cm = ip_Cm(local_Re, local_kc)
+        
+        ip_Cd = interpolate.interp2d(KC, RE, Cd)
+        local_Cd = ip_Cd(local_Re, local_kc)
+        return local_Cm, local_Cd
     
+    def force(self, local_Cd, local_Cm):
+        self.f_drag = 0.5 * self.rho * local_Cd.T * self.diameter * abs(self.U) * self.U
+        self.f_inertial = (self.rho * local_Cm.T * math.pi * pow(self.diameter),2)\
+            * self.accel
+            
+        self.f_total = self.f_drag + self.f_inertial
+        
     
+        
 
-calc = Morisons(50, 5, 0, 0.1, 5)
-z = calc.z_array(50, 0.1)
-t = calc.time(10, 0.1)
-Re = np.array((-10, 1e1, 1e3, 5e5, 1e10))
-vel = calc.horizontal_velocity(1, t, z)
-Re = np.array([[1, 2, 3], [4, 5, 6]])
 
