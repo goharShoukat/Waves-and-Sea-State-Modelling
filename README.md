@@ -13,7 +13,7 @@ The following conditions must be fulfilled to ensure accuracy of results:
 Instructions for Use:
 - Velocity, Pressure and Elevation functions within the Wave_Field Class use spatial grid, at a particular time value. The spatial grid needs to be created by using the meshgrid command by meshing the x and z arrays.  
 - When using class Morisons, the calculations can be for multiple time steps, however, the value of x needs to be fixed. We assume that the diameter is small enough compared to the wavelength so much so that the force application remains the same across the surface. 
-- Whenever the value of 'z' is input, it should be added as negative. The code will not provide accurate results if this condition is not met. 
+
 
 The second version of this library has following limitations:
 - Doesn't allow broadcasting for the k, x, time and omega variables.
