@@ -30,7 +30,7 @@ class Set_Wave_Field:
         def solve_for_k(k):
             return (self.tide_velocity * k + np.sqrt(self.gravity * k * \
                                         np.tanh(k * self.depth)) - self.omega)     
-        return (scipy.optimize.fsolve(solve_for_k, 0))
+        return (scipy.optimize.fsolve(solve_for_k, 0))[0]
 
     #calculates the wave length
     def wave_length(self):        
@@ -145,5 +145,3 @@ class Wave_Field(Set_Wave_Field):
         plt.ylabel('z [m]')
         plt.title('T = ' + str(time) + 's')
         plt.show()
-        
-
