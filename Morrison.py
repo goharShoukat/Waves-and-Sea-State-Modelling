@@ -34,6 +34,7 @@ class Morisons(Linear_Airy_Wave_Solution.Set_Wave_Field):
             print('Large Body Assumption')
         return None
     
+    
     def z_array(self, total_depth, delta_z, start =0):
         return np.arange(start+delta_z, -total_depth, -delta_z).reshape(-1,1)
     
@@ -44,11 +45,32 @@ class Morisons(Linear_Airy_Wave_Solution.Set_Wave_Field):
     #z is passed on a numpy arraym x 1 dimensions
     #z goes from 0 to depth. 
     def horizontal_velocity(self, x, time, z):
-        return self.amplitude * self.omega * np.dot((np.cosh(self.kfromw() * (z + self.depth))/\
+        self.U = self.amplitude * self.omega * np.dot((np.cosh(self.kfromw() * (z + self.depth))/\
             np.sinh(self.kfromw() * self.depth)), (np.sin(self.kfromw() * x - self.omega * time)).T)
+        return self.U
+    
+    def Reynolds(self):
+        return (self.U * self.diameter / self.nu)
+    
+    def kc(self):
+        return (2 * np.pi * self.amplitude / self.diameter) 
+    
+    def coefficient(self, local_Re, local_kc):
+        Re = np.array((-10, 1e1, 1e3, 5e5, 1e10))
+        kc = np.array(-0.05, 5, 15, 50, 100)
+        KC, RE = np.meshgrid(kc, Re)
+        Cm = np.array([[2, 2, 0.6, 1, 1.1], 
+               [2, 2, 0.6, 1, 1.2],
+               [2, 2, 0.8, 1.4, 1.5],
+               [2, 2, 1.3, 1.6, 1.7], 
+               [2, 2, 2, 2, 2]])
+    
     
 
 calc = Morisons(50, 5, 0, 0.1, 5)
 z = calc.z_array(50, 0.1)
-t = calc.time(50, 0.1)
+t = calc.time(10, 0.1)
+Re = np.array((-10, 1e1, 1e3, 5e5, 1e10))
+vel = calc.horizontal_velocity(1, t, z)
+Re = np.array([[1, 2, 3], [4, 5, 6]])
 
