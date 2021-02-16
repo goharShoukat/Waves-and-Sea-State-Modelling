@@ -59,16 +59,6 @@ class Set_Wave_Field:
             print('Water not Deep Enough')
         return None
         
-    #Determines if Morison's Equation is applicable or not. 
-    #Makes use of the displacement parameter for judgement. 
-    #KC can also be used. KC = 2pi A/D
-    def diffraction_effects(self, diameter):
-        ratio = diameter/self.wave_length()
-        if ratio < 0.6:
-            print('Small Body Assumption')
-        else:
-            print('Large Body Assumption')
-        return None
     
     #Calculation of wave steepness parameter to limit wave field
     #within linear airy wave theory
