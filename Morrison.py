@@ -50,8 +50,9 @@ class Morisons(Linear_Airy_Wave_Solution.Set_Wave_Field):
                 * (z + self.depth)) / np.sinh(self.kfromw() * self.depth)), \
                             (np.cos(self.kfromw() * x - self.omega * time)).T)
         return self.U
-    
-    def horizontal_accelration(self, x, time, z):
+    #different function from the one in the linear airy wave solutions library because in that
+    #the functions are spatially discretised. Here they are discretised in time. 
+    def horizontal_acceleration(self, x, time, z):
         self.accel = self.amplitude * pow(self.omega,2) *\
             np.dot((np.cosh(self.kfromw() * (z + self.depth))/\
             np.sinh(self.kfromw() * self.depth)), \
@@ -62,9 +63,13 @@ class Morisons(Linear_Airy_Wave_Solution.Set_Wave_Field):
         return (self.U * self.diameter / self.nu)
     
     def kc(self):
-        return (2 * np.pi * self.amplitude / self.diameter) 
+        return (self.U * self.time_period / self.diameter) 
     
     def coefficient(self, local_Re, local_kc):
+        shape_local_Re = np.shape(local_Re)
+        shape_local_kc = np.shape(local_kc)
+        local_Re = local_Re.flatten('F')
+        local_kc = local_kc.flatten('F')
         Re = np.array((-10, 1e1, 1e3, 5e5, 1e10))
         kc = np.array((-0.05, 5, 15, 50, 100))
         KC, RE = np.meshgrid(kc, Re)
@@ -85,6 +90,8 @@ class Morisons(Linear_Airy_Wave_Solution.Set_Wave_Field):
         
         ip_Cd = interpolate.interp2d(KC, RE, Cd)
         local_Cd = ip_Cd(local_Re, local_kc)
+        local_Re = local_Re.reshape(shape_local_Re[0], shape_local_Re[1])
+        local_kc = local_kc.reshape(shape_local_kc[0], shape_local_kc[1])
         return local_Cm, local_Cd
     
     def force(self, local_Cd, local_Cm):
@@ -95,6 +102,16 @@ class Morisons(Linear_Airy_Wave_Solution.Set_Wave_Field):
         self.f_total = self.f_drag + self.f_inertial
         
     
-        
+field = Morisons(50, 10, 0, 0.3, 10)
+t = field.time(20,0.5)
+x = 0
+elevation = field.elevation(0,t)
+field.diffraction_effects()
+z_array = field.z_array(50, 0.5)
+hor_velocity = field.horizontal_velocity(x, t, z_array)
+a = field.horizontal_acceleration(x, t, z_array)
+Re = field.Reynolds()
+kc = field.kc()
+coefficient = field.coefficient(Re, kc)
 
 

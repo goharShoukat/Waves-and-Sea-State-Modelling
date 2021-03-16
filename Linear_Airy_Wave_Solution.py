@@ -22,6 +22,7 @@ class Set_Wave_Field:
     def __init__(self,depth, time_period, tide_velocity, amplitude):
         self.depth = depth
         self.tide_velocity = tide_velocity
+        self.time_period = time_period
         self.omega = 2*math.pi/time_period
         self.amplitude = amplitude
         
@@ -135,13 +136,18 @@ class Wave_Field(Set_Wave_Field):
     #correct angle and mangnitude of the quivers. 
     def plot(self, pressure, hor_velocity, vert_velocity, time):
         plt.figure()
+    
         plt.contourf(self.X, self.Z, pressure)
-        plt.colorbar()
+        plt.colorbar(label = 'Pressure [Pa]')
+        widths = np.linspace(0, 5, self.X.size)
         plt.quiver(self.X, self.Z, \
                    self.horizontal_velocity_spatial_variable(time), \
-                       self.vertical_velocity_spatial_variable(time))
+                       self.vertical_velocity_spatial_variable(time), linewidths = widths)
+            
+    
         plt.plot(self.x, self.elevation(self.x, time))
         plt.xlabel('x [m]')
         plt.ylabel('z [m]')
+        
         plt.title('T = ' + str(time) + 's')
         plt.show()
