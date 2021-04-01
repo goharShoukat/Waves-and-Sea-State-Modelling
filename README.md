@@ -1,4 +1,4 @@
-# Hydrodynamic Load Analysis using Morisons Equation
+# Wave and Sea State Modelling
 This Library allows users to model forces acting on a cylindrical bottom mounted offshore structure. It has the following utilities:
 - Wave Field Meshing
 - Wave Field Modelling
