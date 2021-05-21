@@ -66,10 +66,10 @@ class Morisons(Linear_Airy_Wave_Solution.Set_Wave_Field):
         return (self.U * self.time_period / self.diameter) 
     
     def coefficient(self, local_Re, local_kc):
-        shape_local_Re = np.shape(local_Re)
-        shape_local_kc = np.shape(local_kc)
-        local_Re = local_Re.flatten('F')
-        local_kc = local_kc.flatten('F')
+       # shape_local_Re = np.shape(local_Re)
+       # shape_local_kc = np.shape(local_kc)
+     #   local_Re = local_Re.flatten('F')
+      #  local_kc = local_kc.flatten('F')
         Re = np.array((-10, 1e1, 1e3, 5e5, 1e10))
         kc = np.array((-0.05, 5, 15, 50, 100))
         KC, RE = np.meshgrid(kc, Re)
@@ -85,13 +85,14 @@ class Morisons(Linear_Airy_Wave_Solution.Set_Wave_Field):
                        [2, 1.3, 1, 0.6, 0.5],
                        [2, 0.5, 0.7, 0.6, 0.6]])
         
-        ip_Cm = interpolate.interp2d(KC, RE, Cm)
-        local_Cm = ip_Cm(local_Re, local_kc)
+        #value isnt exactly accurate after interpolation. this function has some errors from scipy
+        ip_Cm = interpolate.interp2d(KC, RE, Cm, kind = 'cubic')
+        local_Cm = ip_Cm(local_kc, local_Re)
         
-        ip_Cd = interpolate.interp2d(KC, RE, Cd)
-        local_Cd = ip_Cd(local_Re, local_kc)
-        local_Re = local_Re.reshape(shape_local_Re[0], shape_local_Re[1])
-        local_kc = local_kc.reshape(shape_local_kc[0], shape_local_kc[1])
+        ip_Cd = interpolate.interp2d(KC, RE, Cd, kind = 'cubic')
+        local_Cd = ip_Cd(local_kc, local_Re)
+       # local_Re = local_Re.reshape(shape_local_Re[0], shape_local_Re[1])
+      #  local_kc = local_kc.reshape(shape_local_kc[0], shape_local_kc[1])
         return local_Cm, local_Cd
     
     def force(self, local_Cd, local_Cm):
@@ -112,6 +113,6 @@ hor_velocity = field.horizontal_velocity(x, t, z_array)
 a = field.horizontal_acceleration(x, t, z_array)
 Re = field.Reynolds()
 kc = field.kc()
-coefficient = field.coefficient(Re, kc)
+Cm, Cd = field.coefficient(10000, 10)
 
 
