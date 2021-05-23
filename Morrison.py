@@ -104,6 +104,7 @@ class Morisons(Linear_Airy_Wave_Solution.Set_Wave_Field):
             * self.accel
             
         f_total = f_drag + f_inertial
+        #crete a dictionary for the 3 forces and return the dictionary to be ploted
         force = {f_drag: 'Drag Force', f_inertial: 'Inertial Force', f_total: 'Total Force'}
         return force
         
