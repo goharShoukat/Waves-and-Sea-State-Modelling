@@ -65,11 +65,14 @@ class Morisons(Linear_Airy_Wave_Solution.Set_Wave_Field):
     def kc(self):
         return (self.U * self.time_period / self.diameter) 
     
+    #array can not be passed on to this function. loop it through
     def coefficient(self, local_Re, local_kc):
        # shape_local_Re = np.shape(local_Re)
        # shape_local_kc = np.shape(local_kc)
      #   local_Re = local_Re.flatten('F')
       #  local_kc = local_kc.flatten('F')
+        if type(local_Re) == np.ndarray or type(local_kc) == np.ndarray:
+            raise TypeError ('x can be a non-array value only') 
         Re = np.array((-10, 1e1, 1e3, 5e5, 1e10))
         kc = np.array((-0.05, 5, 15, 50, 100))
         KC, RE = np.meshgrid(kc, Re)
@@ -96,11 +99,13 @@ class Morisons(Linear_Airy_Wave_Solution.Set_Wave_Field):
         return local_Cm, local_Cd
     
     def force(self, local_Cd, local_Cm):
-        self.f_drag = 0.5 * self.rho * local_Cd.T * self.diameter * abs(self.U) * self.U
-        self.f_inertial = (self.rho * local_Cm.T * math.pi * pow(self.diameter),2)\
+        f_drag = 0.5 * self.rho * local_Cd.T * self.diameter * abs(self.U) * self.U
+        f_inertial = (self.rho * local_Cm.T * math.pi * pow(self.diameter),2)\
             * self.accel
             
-        self.f_total = self.f_drag + self.f_inertial
+        f_total = f_drag + f_inertial
+        force = {f_drag: 'Drag Force', f_inertial: 'Inertial Force', f_total: 'Total Force'}
+        return force
         
     
 field = Morisons(50, 10, 0, 0.3, 10)
